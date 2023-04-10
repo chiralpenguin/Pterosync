@@ -4,7 +4,7 @@ import datetime as dt
 import pathlib as path
 
 input_format = '%d'
-dt_format = '%Y-%m-%d_%H-%M-%S'
+dt_format = '%Y-%m-%d_%H:%M:%S'
 
 servers_path = sys.argv[1]
 purge_days = int(sys.argv[2])
@@ -16,7 +16,10 @@ for server_path in servers_dir.iterdir():
     print(f"Server: {server_path.name} contains {len(backups)} backups.", )
 
     for backup in backups:
-        backup_time = dt.datetime.strptime(backup.name, dt_format)
+        try: 
+            backup_time = dt.datetime.strptime(backup.name, dt_format)
+        except ValueError:
+            continue
         if backup_time < threshold_time:
             print(f"Deleting backup from: {backup_time}...")
             shutil.rmtree(backup)
